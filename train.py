@@ -2,7 +2,7 @@ from dataset import make_dataset, Dataloader
 from network.model_utils import get_net
 # from early_stop import EarlyStopping
 
-from torch.optim.lr_scheduler import StepLR
+from torch.optim.lr_scheduler import StepLR,ReduceLROnPlateau
 from torch.utils.tensorboard import SummaryWriter
 from torch.autograd import Variable
 from tqdm import tqdm
@@ -23,7 +23,7 @@ parser.add_argument('--model', type=str,default="efficientnet-b4",
                     help="which model")
 parser.add_argument('--lr', type=float, default=0.256, help="learning rate")
 parser.add_argument('--gpu', type=int, nargs='+',required=True,default=[0,1], help='gpu device')
-parser.add_argument('--epochs', type=int, default=150, help='num of epoch')
+parser.add_argument('--epochs', type=int, default=300, help='num of epoch')
 parser.add_argument('--num-classes', type=int, default=200,
                     help='The number of classes for your classification problem')
 parser.add_argument('--train-batch-size', type=int, default=24,
@@ -67,7 +67,8 @@ def train():
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(
         model.parameters(), lr=opt.lr, momentum=0.9, weight_decay=1e-5, nesterov=True)
-    scheduler = StepLR(optimizer,step_size=2.4,gamma=0.97,last_epoch=-1)
+    # scheduler = StepLR(optimizer,step_size=10,gamma=0.1,last_epoch=-1)
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=4, verbose=True, cooldown=1)
 
     for epoch in range(opt.epochs):
         log_string(f'Epoch: {epoch+1}/{opt.epochs}')
@@ -126,7 +127,7 @@ def train():
 
         log_string(f'Eval loss: {eval_loss:.4f}\taccuracy: {eval_acc:.4f}')
 
-        scheduler.step()
+        scheduler.step(eval_loss)
 
         if eval_acc > best_acc:
             best_acc = eval_acc
@@ -172,7 +173,6 @@ def log_string(message):
 
 
 if __name__ == "__main__":
-
     ckpt_dir=os.path.join(opt.logs,'checkpoints')
     event_dir=os.path.join(opt.logs,'events')
     log_dir=os.path.join(opt.logs,'logger')
@@ -184,6 +184,7 @@ if __name__ == "__main__":
         os.mkdir(log_dir)
         
     set_logger(log_dir)
+    log_string(opt)
     writer = SummaryWriter(event_dir)
 
     train()
