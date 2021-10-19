@@ -58,7 +58,7 @@ def test(img_names,ckpt,img_size,net,gpu,num_classes,data_root,class_table):
         preds=preds.cpu().numpy()[0]
         submission.append([img_name, class_table[preds]])
     
-    np.savetxt('efficient_b4_1_answer.txt',submission,fmt='%s')
+    np.savetxt('answer.txt',submission,fmt='%s')
     print("complete...")
 
 

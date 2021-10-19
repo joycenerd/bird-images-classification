@@ -15,6 +15,7 @@ import copy
 import os
 import argparse
 import logging
+from sam import SAM,enable_running_stats,disable_running_stats
 
 
 parser = argparse.ArgumentParser()
@@ -26,7 +27,7 @@ parser.add_argument('--gpu', type=int, nargs='+',required=True,default=[0,1], he
 parser.add_argument('--epochs', type=int, default=300, help='num of epoch')
 parser.add_argument('--num-classes', type=int, default=200,
                     help='The number of classes for your classification problem')
-parser.add_argument('--train-batch-size', type=int, default=24,
+parser.add_argument('--train-batch-size', type=int, default=12,
                     help='The batch size for training data')
 parser.add_argument('--dev-batch-size', type=int, default=8,
                     help='The batch size for validation data')
@@ -65,8 +66,9 @@ def train():
 
     # initialize loss optimizer and scheduler
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(
-        model.parameters(), lr=opt.lr, momentum=0.9, weight_decay=1e-5, nesterov=True)
+    # optimizer = torch.optim.SGD(model.parameters(), lr=opt.lr, momentum=0.9, weight_decay=1e-5, nesterov=True)
+    base_optimizer=torch.optim.SGD
+    optimizer=SAM(model.parameters(),base_optimizer, rho=0.05,adaptive=True,lr=opt.lr,momentum=0.9,weight_decay=0.0001)
     # scheduler = StepLR(optimizer,step_size=10,gamma=0.1,last_epoch=-1)
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=4, verbose=True, cooldown=1)
 
@@ -85,11 +87,17 @@ def train():
             optimizer.zero_grad()
             outputs = model(inputs)
 
+            # first pass
+            enable_running_stats(model)
             _, preds = torch.max(outputs.data, 1)
             loss = criterion(outputs, labels)
-
             loss.backward()
-            optimizer.step()
+            optimizer.first_step(zero_grad=True)
+
+            # second pass
+            disable_running_stats(model)
+            criterion(model(inputs),labels).backward()
+            optimizer.second_step(zero_grad=True)
 
             training_loss += loss.item() * inputs.size(0)
             training_corrects += torch.sum(preds == labels.data)
