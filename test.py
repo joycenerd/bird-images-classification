@@ -45,7 +45,9 @@ def test(img_names,ckpt,img_size,net,gpu,num_classes,data_root,class_table):
     model=model.cuda(gpu)
     model.eval()
     print("model loaded...")
-    
+    print(f"epoch: {checkpoint['epoch']}")
+    print(f"eval acc: {checkpoint['acc']:.4f}")
+
     submission=[]
     for img_name in img_names:
         img_path=os.path.join(data_root,'testing_images',img_name)
