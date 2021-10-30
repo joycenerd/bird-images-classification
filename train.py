@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--data-root', type=str, required=True, help='Your dataset root directory')
 parser.add_argument('--model', type=str,default="efficientnet-b4",
                     help="which model")
-parser.add_argument('--lr', type=float, default=0.256, help="learning rate")
+parser.add_argument('--lr', type=float, default=0.01, help="learning rate")
 parser.add_argument('--gpu', type=int, nargs='+',required=True,default=[0,1], help='gpu device')
 parser.add_argument('--epochs', type=int, default=200, help='num of epoch')
 parser.add_argument('--num-classes', type=int, default=200,
@@ -60,6 +60,8 @@ def train():
     model = net
     model= nn.DataParallel(model,device_ids = opt.gpu)
     model.to(device)
+    # for name, para in model.named_parameters():
+    #     print('{}: {}'.format(name, para.shape))
 
     best_acc = 0.0
 
@@ -82,11 +84,12 @@ def train():
 
             optimizer.zero_grad()
             outputs = model(inputs)
+            # print(model.module.w)
 
-            # first pass
             _, preds = torch.max(outputs.data, 1)
             loss = criterion(outputs, labels)
             loss.backward()
+            optimizer.step()
 
             training_loss += loss.item() * inputs.size(0)
             training_corrects += torch.sum(preds == labels.data)
@@ -115,10 +118,10 @@ def train():
 
             eval_loss += loss.item()*inputs.size(0)
             eval_corrects += torch.sum(preds == labels.data)
-            scheduler(epoch)
 
         eval_loss = eval_loss/len(eval_set)
         eval_acc = float(eval_corrects)/len(eval_set)
+        scheduler.step(eval_loss)
 
         writer.add_scalar("eval loss/epochs", eval_loss, epoch+1)
         writer.add_scalar("eval accuracy/epochs", eval_acc, epoch+1)

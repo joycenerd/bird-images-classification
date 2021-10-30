@@ -1,9 +1,14 @@
 import os
 import math
 import random
+import argparse
+
+parser=argparse.ArgumentParser()
+parser.add_argument('--data-root',type=str,default='/eva_data/zchin/2021VRDL_HW1_datasets',help='raw data saving path')
+args=parser.parse_args()
 
 
-data_root='/eva_data/zchin/2021VRDL_HW1_datasets'
+data_root=args.data_root
 
 train_label_f=open(os.path.join(data_root,'training_labels.txt'),'r',encoding='utf-8')
 entries=[]
