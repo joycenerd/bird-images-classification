@@ -2,7 +2,7 @@
 
 by [Zhi-Yi Chin](https://joycenerd.github.io/)
 
-This repository is imlementation of homework 1 in IOC5008 Selected Topics in Visual Recognition using Deep Learning course at National Yang Ming Chiao Tung University.
+This repository is implementation of homework1 in IOC5008 Selected Topics in Visual Recognition using Deep Learning course at National Yang Ming Chiao Tung University.
 
 In this homework, we participated a bird image classification challenge hosted on [CodaLab](https://competitions.codalab.org/competitions/35668?secret_key=09789b13-35ec-4928-ac0f-6c86631dda07). This challenge provided a total of 6,033 bird images (3000 for training and 3033 for testing) belonging to 200 bird species. For the fairness of this challenge, external data is not allowed to train our model. We can use pre-trained models that have been released by other people online, but is limited to pre-train on [ImageNet](https://www.image-net.org/).
 
@@ -125,7 +125,7 @@ To reproduce our submission without retraining, do the following steps
 
 ## Pre-trained Models
 
-Our pre-trained model is in `checkpoints/efficientnet-b4_best_model.pth`.
+Click into **Releases** in this repository. Under **EfficientNet-b4 model** download `efficientnet-b4_best_model.pth`. This pre-trained model get accuracy 72.53% on the test set.
 
 ## Results
 
