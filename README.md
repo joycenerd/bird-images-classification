@@ -93,13 +93,6 @@ optional arguments:
   --gpu GPU             gpu id
 ```
 
-Recommended testing command:
-```
-python test.py --data-root <path_to_data> --ckpt <path_to_checkpoint> --img-size 380 --net efficientnet-b4 --gpu 0
-```
-
-`answer.txt` will be generated in this directory. This file is the submission file.
-
 ## Submit the results
 Run this command to `zip` your submission file:
 ```
@@ -107,10 +100,21 @@ zip answer.zip answer.txt
 ```
 You can upload `answer.zip` to the challenge. Then you can get your testing score.
 
+## Pre-trained models
+
+Click into [Releases](https://github.com/joycenerd/bird-images-classification/releases). Under **EfficientNet-b4 model** download `efficientnet-b4_best_model.pth`. This pre-trained model get accuracy 72.53% on the test set.
+
+Recommended testing command:
+```
+python test.py --data-root <path_to_data> --ckpt <path_to_checkpoint> --img-size 380 --net efficientnet-b4 --gpu 0
+```
+
+`answer.txt` will be generated in this directory. This file is the submission file.
+
 ## Inference
 To reproduce our results, run this command:
 ```
-python inference.py --data-root <path_to_data> --ckpt ./checkpoints/efficientnet-b4_best_model.pth --img-size 380 --net efficientnet-b4 --gpu 0
+python inference.py --data-root <path_to_data> --ckpt <pre-trained_model_path> --img-size 380 --net efficientnet-b4 --gpu 0
 ```
 
 ## Reproducing Submission
@@ -120,12 +124,9 @@ To reproduce our submission without retraining, do the following steps
 1. [Getting the code](#getting-the-code)
 2. [Install the dependencies](#requirements)
 2. [Download the data](#dataset)
+4. [Download pre-trained models](#pre-trained-models)
 3. [Inference](#inference)
 4. [Submit the results](#submit-the-results)
-
-## Pre-trained Models
-
-Click into **Releases** in this repository. Under **EfficientNet-b4 model** download `efficientnet-b4_best_model.pth`. This pre-trained model get accuracy 72.53% on the test set.
 
 ## Results
 
