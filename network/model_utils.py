@@ -31,6 +31,9 @@ def get_net(model,num_classes):
         model = EfficientNet.from_pretrained(
             'efficientnet-b3', num_classes=num_classes)
         return model
-    elif  model=='ensemble':
-        model=EnsembleModel(num_classes)
+    elif  model=='ensemble50':
+        model=EnsembleModel(num_classes,50)
+        return model
+    elif model=='ensemble101':
+        model=EnsembleModel(num_classes,101)
         return model
