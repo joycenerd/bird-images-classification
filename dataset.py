@@ -88,7 +88,6 @@ def make_dataset(mode,data_root,img_size):
         transforms.RandomVerticalFlip(p=0.5),
         transforms.ColorJitter(
             brightness=0.5, contrast=0.5, saturation=0.5, hue=0.5),
-        transforms.Grayscale(num_output_channels=3),
         RandomShift(3),
         transforms.RandomApply([colour_transform]),
     ]

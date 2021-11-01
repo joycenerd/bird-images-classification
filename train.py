@@ -16,7 +16,6 @@ import os
 import argparse
 import logging
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--data-root', type=str, required=True, help='Your dataset root directory')
 parser.add_argument('--model', type=str,default="efficientnet-b4",
@@ -60,8 +59,6 @@ def train():
     model = net
     model= nn.DataParallel(model,device_ids = opt.gpu)
     model.to(device)
-    # for name, para in model.named_parameters():
-    #     print('{}: {}'.format(name, para.shape))
 
     best_acc = 0.0
 

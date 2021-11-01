@@ -1,3 +1,4 @@
+import torchvision
 from .resnest.restnest import get_model
 
 from efficientnet_pytorch import EfficientNet
