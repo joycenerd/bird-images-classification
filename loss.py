@@ -50,7 +50,7 @@ class NLL_OHEM(torch.nn.NLLLoss):
             else: 
                 self.ratio=0.5*(self.total_ep-epoch)/float(half-max_range)"""
         
-    def ratio_sched(self,epoch):
+    """def ratio_sched(self,epoch):
         if epoch<40:
             self.ratio=1
         elif epoch>=40 and epoch<60:
@@ -61,10 +61,25 @@ class NLL_OHEM(torch.nn.NLLLoss):
             self.ratio=0.7
         elif epoch>=130 and epoch<170:
             self.ratio=0.6
-        elif epoch>=170 and epoch<190:
-            self.ratio=0.5
-        elif epoch>=190:
+        elif epoch>=170:
+            self.ratio=0.5"""
+    
+    def ratio_sched(self,epoch):
+        if epoch<40:
+            self.ratio=1
+        elif epoch>=40 and epoch<50:
             self.ratio=0.4
+        elif epoch>=50 and epoch<70:
+            self.ratio=0.5
+        elif epoch>=70 and epoch<110:
+            self.ratio=0.6
+        elif epoch>=110 and epoch<150:
+            self.ratio=0.7
+        elif epoch>=150 and epoch<180:
+            self.ratio=0.8
+        elif epoch>=180:
+            self.ratio=0.9
+
 
 
 if __name__=='__main__':
