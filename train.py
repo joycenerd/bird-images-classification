@@ -15,6 +15,8 @@ import copy
 import os
 import argparse
 import logging
+from loss import NLL_OHEM
+import torch.nn.functional as F
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data-root', type=str, required=True, help='Your dataset root directory')
@@ -63,7 +65,8 @@ def train():
     best_acc = 0.0
 
     # initialize optimizer and scheduler
-    criterion = nn.CrossEntropyLoss()
+    # criterion = nn.CrossEntropyLoss()
+    criterion=NLL_OHEM(ratio=0.1,device=device,total_ep=opt.epochs)
     optimizer = torch.optim.SGD(model.parameters(), lr=opt.lr, momentum=0.9, weight_decay=1e-5, nesterov=True)
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=4, verbose=True, cooldown=1)
 
@@ -84,7 +87,8 @@ def train():
             # print(model.module.w)
 
             _, preds = torch.max(outputs.data, 1)
-            loss = criterion(outputs, labels)
+            # loss = criterion(outputs, labels)
+            loss= criterion(F.log_softmax(outputs,dim=1), labels,epoch)
             loss.backward()
             optimizer.step()
 
@@ -105,13 +109,12 @@ def train():
         eval_corrects = 0
 
         for i, (inputs, labels) in enumerate(tqdm(eval_loader)):
-            inputs = Variable(inputs.cuda(device))
-            labels = Variable(labels.cuda(device))
+            inputs = Variable(inputs.to(device))
+            labels = Variable(labels.to(device))
 
             outputs = model(inputs)
-
             _, preds = torch.max(outputs.data, 1)
-            loss = criterion(outputs, labels)
+            loss= criterion(F.log_softmax(outputs,dim=1), labels,epoch,sched_ratio=False)
 
             eval_loss += loss.item()*inputs.size(0)
             eval_corrects += torch.sum(preds == labels.data)
