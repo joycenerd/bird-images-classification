@@ -142,7 +142,7 @@ Our model achieves the following performance:
 ## Citation
 If you find our work useful in your project, please cite:
 
-```
+```bibtex
 @misc{
     title = {bird_image_classification},
     author = {Zhi-Yi Chin},
