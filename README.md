@@ -1,6 +1,8 @@
 # Bird Images Classification
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+[Report](./REPORT.pdf)
+
 by [Zhi-Yi Chin](https://joycenerd.github.io/)
 
 This repository is implementation of homework1 in IOC5008 Selected Topics in Visual Recognition using Deep Learning course at National Yang Ming Chiao Tung University.
