@@ -17,7 +17,7 @@ class NLL_OHEM(torch.nn.NLLLoss):
     def forward(self, x, y, epoch,sched_ratio=True):                                                                                              
         num_inst = x.size(0)
         if sched_ratio:
-            self.ratio_sched(epoch)
+            self.step_ratio_sched(epoch)
         else:
             self.ratio=1
         # print(self.ratio)                                                      
@@ -35,7 +35,7 @@ class NLL_OHEM(torch.nn.NLLLoss):
             loss=torch.nn.functional.nll_loss(x,y,reduction='mean')                                        
         return loss  
 
-    """def ratio_sched(self,epoch):
+    def cyclic_ratio_sched(self,epoch):
         half=int(self.total_ep/2)
         max_range=int(half*0.2)
         if epoch<half:
@@ -48,9 +48,9 @@ class NLL_OHEM(torch.nn.NLLLoss):
             if epoch<(half+max_range):
                 self.ratio=0.5
             else: 
-                self.ratio=0.5*(self.total_ep-epoch)/float(half-max_range)"""
+                self.ratio=0.5*(self.total_ep-epoch)/float(half-max_range)
         
-    """def ratio_sched(self,epoch):
+    def step_ratio_sched(self,epoch):
         if epoch<40:
             self.ratio=1
         elif epoch>=40 and epoch<60:
@@ -62,48 +62,40 @@ class NLL_OHEM(torch.nn.NLLLoss):
         elif epoch>=130 and epoch<170:
             self.ratio=0.6
         elif epoch>=170:
-            self.ratio=0.5"""
-    
-    def ratio_sched(self,epoch):
-        if epoch<40:
-            self.ratio=1
-        elif epoch>=40 and epoch<50:
-            self.ratio=0.4
-        elif epoch>=50 and epoch<70:
             self.ratio=0.5
-        elif epoch>=70 and epoch<110:
-            self.ratio=0.6
-        elif epoch>=110 and epoch<150:
-            self.ratio=0.7
-        elif epoch>=150 and epoch<180:
-            self.ratio=0.8
-        elif epoch>=180:
-            self.ratio=0.9
-
-
 
 if __name__=='__main__':
     ratio_list=[]
-    i_list=[]
-    for i in range(0,200):
-        half=100
-        max_range=int(half*0.2)
-        if i<half:
-            if i<max_range:
-                ratio=1.0
-            else:
-                ratio=(half-i)/float(half-max_range)
-        
-        else:
-            if i<(half+max_range):
-                ratio=0.5
-            else: 
-                ratio=0.5*(200-i)/float(half-max_range)
+    epoch_list=[]
+    for epoch in range(0,200):
+        if epoch<40:
+            ratio=1
+        elif epoch>=40 and epoch<60:
+            ratio=0.9
+        elif epoch>=60 and epoch<90:
+            ratio=0.8
+        elif epoch>=90 and epoch<130:
+            ratio=0.7
+        elif epoch>=130 and epoch<170:
+            ratio=0.6
+        elif epoch>=170:
+            ratio=0.5
         ratio_list.append(ratio)
-        i_list.append(i)
+        epoch_list.append(epoch)
 
     plt.rcParams["font.family"] = "serif"
-    plt.plot(i_list,ratio_list)
+
+    CB91_Blue = '#2CBDFE'
+    CB91_Green = '#47DBCD'
+    CB91_Pink = '#F3A0F2'
+    CB91_Purple = '#9D2EC5'
+    CB91_Violet = '#661D98'
+    CB91_Amber = '#F5B14C'
+    color_list = [CB91_Blue, CB91_Pink, CB91_Green, CB91_Amber,
+              CB91_Purple, CB91_Violet]
+    plt.rcParams['axes.prop_cycle'] = plt.cycler(color=color_list)
+    
+    plt.plot(epoch_list,ratio_list)
     plt.xlabel('epoch')
     plt.ylabel('hard mining ratio (k)')
-    plt.savefig('ohem_ratio.png')
+    plt.savefig('ohem_step_ratio.png')

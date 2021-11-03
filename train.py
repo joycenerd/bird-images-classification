@@ -15,7 +15,6 @@ import copy
 import os
 import argparse
 import logging
-from loss import NLL_OHEM
 import torch.nn.functional as F
 
 parser = argparse.ArgumentParser()
@@ -65,8 +64,7 @@ def train():
     best_acc = 0.0
 
     # initialize optimizer and scheduler
-    # criterion = nn.CrossEntropyLoss()
-    criterion=NLL_OHEM(ratio=0.1,device=device,total_ep=opt.epochs)
+    criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=opt.lr, momentum=0.9, weight_decay=1e-5, nesterov=True)
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=4, verbose=True, cooldown=1)
 
@@ -83,12 +81,10 @@ def train():
             labels = Variable(labels.to(device))
 
             optimizer.zero_grad()
-            outputs = model(inputs)
-            # print(model.module.w)
+            outputs = model(inputs))
 
             _, preds = torch.max(outputs.data, 1)
-            # loss = criterion(outputs, labels)
-            loss= criterion(F.log_softmax(outputs,dim=1), labels,epoch)
+            loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
 
@@ -122,6 +118,8 @@ def train():
         eval_loss = eval_loss/len(eval_set)
         eval_acc = float(eval_corrects)/len(eval_set)
         scheduler.step(eval_loss)
+        if epoch==50 or epoch==150:
+            opt.lr=scheduler.optimizer.param_groups[0]['lr']*10
 
         writer.add_scalar("eval loss/epochs", eval_loss, epoch+1)
         writer.add_scalar("eval accuracy/epochs", eval_acc, epoch+1)
@@ -130,8 +128,6 @@ def train():
 
         if eval_acc > best_acc:
             best_acc = eval_acc
-
-            # best_model_params_acc = copy.deepcopy(model.state_dict())
             torch.save({
                 'epoch':epoch,
                 'model_state_dict':model.state_dict(),

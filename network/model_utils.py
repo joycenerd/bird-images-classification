@@ -3,8 +3,6 @@ from .resnest.restnest import get_model
 
 from efficientnet_pytorch import EfficientNet
 import torch
-from .ensemble import EnsembleModel
-
 
 def get_net(model,num_classes):
     if model == 'resnest50':
@@ -31,10 +29,4 @@ def get_net(model,num_classes):
     elif model == 'efficientnet-b3':
         model = EfficientNet.from_pretrained(
             'efficientnet-b3', num_classes=num_classes)
-        return model
-    elif  model=='ensemble50':
-        model=EnsembleModel(num_classes,50)
-        return model
-    elif model=='ensemble101':
-        model=EnsembleModel(num_classes,101)
         return model
