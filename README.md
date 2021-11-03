@@ -1,7 +1,7 @@
 # Bird Images Classification
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[Report](./REPORT.pdf)
+### [Report](./REPORT.pdf)
 
 by [Zhi-Yi Chin](https://joycenerd.github.io/)
 
