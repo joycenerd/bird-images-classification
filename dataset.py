@@ -20,13 +20,13 @@ class BirdDataset(Dataset):
         self.transform = transform
 
         if mode == "train":
-            labels = open(os.path.join(self.root_dir,'new_train_label.txt'))
+            labels = open(os.path.join(self.root_dir, 'new_train_label.txt'))
 
-        elif mode=='eval':
-            labels = open(os.path.join(self.root_dir,'new_eval_label.txt'))
+        elif mode == 'eval':
+            labels = open(os.path.join(self.root_dir, 'new_eval_label.txt'))
 
         for label in labels:
-            label_list=label.split(',')
+            label_list = label.split(',')
             self.x.append(label_list[0])
             self.y.append(int(label_list[1]))
 
@@ -75,8 +75,7 @@ class RandomShift(object):
         return img.transform(img.size, Image.AFFINE, (1, 0, hshift, 0, 1, vshift), resample=Image.BICUBIC, fill=1)
 
 
-def make_dataset(mode,data_root,img_size):
-
+def make_dataset(mode, data_root, img_size):
     colour_transform = transforms.Lambda(lambda x: _random_colour_space(x))
 
     transform = [
@@ -99,27 +98,27 @@ def make_dataset(mode,data_root,img_size):
             (-90, 90), expand=False, center=None)], p=0.5),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[
-                             0.229, 0.224, 0.225])
+            0.229, 0.224, 0.225])
     ])
 
     data_transform_dev = transforms.Compose([
         transforms.Resize((img_size, img_size)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[
-                             0.229, 0.224, 0.225])
+            0.229, 0.224, 0.225])
     ])
 
-    data_transform_test=transforms.Compose([
-        transforms.Resize((img_size,img_size)),
+    data_transform_test = transforms.Compose([
+        transforms.Resize((img_size, img_size)),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485,0.456,0.406],std=[0.229,0.224,0.225])
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
-    if(mode == "train"):
+    if (mode == "train"):
         data_set = BirdDataset(data_root, mode, data_transform_train)
-    elif(mode == "eval"):
+    elif (mode == "eval"):
         data_set = BirdDataset(data_root, mode, data_transform_dev)
-    elif(mode=="test"):
-        data_set=BirdDataset(data_root, mode, data_transform_test)
+    elif (mode == "test"):
+        data_set = BirdDataset(data_root, mode, data_transform_test)
 
     return data_set
